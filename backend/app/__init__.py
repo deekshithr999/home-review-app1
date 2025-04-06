@@ -1,6 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import OperationalError
+
 from flask_cors import CORS
+
+import time
+import os
 
 db = SQLAlchemy()
 
@@ -13,7 +18,11 @@ def create_app():
 
     CORS(app)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///homes.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}"
+        f"@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
+    )
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = 'app/uploads'
 
@@ -23,6 +32,12 @@ def create_app():
     app.register_blueprint(main)
 
     with app.app_context():
-        db.create_all()
+        for i in range(5):
+            try:
+                db.create_all()
+                break
+            except OperationalError:
+                print("Database not ready, waiting...")
+                time.sleep(3)
 
     return app
