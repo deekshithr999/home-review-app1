@@ -14,6 +14,8 @@ const SubmitReview = ({ username }) => {
   const [comment, setComment] = useState('');
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
+  const [previewUrl, setPreviewUrl] = useState(null);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +38,7 @@ const SubmitReview = ({ username }) => {
         setRating(3);
         setComment('');
         setImage(null);
+        setPreviewUrl(null); 
       }
     } catch (err) {
       setMessage('Error submitting review');
@@ -86,9 +89,38 @@ const SubmitReview = ({ username }) => {
             type="file"
             accept="image/*"
             hidden
-            onChange={(e) => setImage(e.target.files[0])}
-          />
+            onChange={(e) => {
+                const file = e.target.files[0];
+                setImage(file);
+                if (file) {
+                setPreviewUrl(URL.createObjectURL(file));
+                } else {
+                setPreviewUrl(null);
+                }
+            }}
+            />
+
         </Button>
+        {previewUrl && (
+        <Box sx={{ mb: 2, textAlign: 'center' }}>
+            <Typography variant="caption" color="text.secondary">
+            Image Preview:
+            </Typography>
+            <Box
+            component="img"
+            src={previewUrl}
+            alt="Preview"
+            sx={{
+                maxWidth: '100%',
+                maxHeight: 200,
+                mt: 1,
+                borderRadius: 2,
+                boxShadow: 2,
+            }}
+            />
+        </Box>
+        )}
+
         <Button type="submit" variant="contained" fullWidth>
           Submit Review
         </Button>

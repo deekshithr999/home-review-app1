@@ -101,6 +101,14 @@ const SearchReviews = () => {
                     <Typography variant="subtitle1" fontWeight="bold">
                     User: {r.username}
                     </Typography>
+
+                    {/* Timestamp */}
+                    {r.timestamp && (
+                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
+                        Posted on {new Date(r.timestamp).toLocaleString()}
+                    </Typography>
+                    )}
+
                     <Rating name="read-only" value={r.rating} readOnly />
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                     {r.comment}

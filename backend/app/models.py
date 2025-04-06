@@ -1,4 +1,5 @@
 from . import db
+from datetime import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,5 +21,6 @@ class Review(db.Model):
 
     home_id = db.Column(db.Integer, db.ForeignKey('home.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref='reviews', lazy=True)

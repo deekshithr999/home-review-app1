@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from .models import User, Home, Review
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from sqlalchemy import func
 import os
 
 
@@ -92,7 +92,7 @@ def get_reviews():
     if not address:
         return {"error": "Address is required"}, 400
 
-    home = Home.query.filter_by(address=address).first()
+    home = Home.query.filter(func.lower(Home.address) == address.lower()).first()
     if not home:
         return {"error": "Home not found"}, 404
 
@@ -104,7 +104,9 @@ def get_reviews():
             "username": review.user.username,
             "rating": review.rating,
             "comment": review.comment,
-            "image": review.image_path
+            "image": review.image_path,
+            "timestamp": review.timestamp.isoformat()
+
         })
 
     return {"reviews": results}
@@ -137,7 +139,8 @@ def get_my_reviews():
                 "address": review.home.address,
                 "rating": review.rating,
                 "comment": review.comment,
-                "image": review.image_path
+                "image": review.image_path,
+                "timestamp": review.timestamp.isoformat()
             }
             for review in reviews
         ]
