@@ -70,7 +70,7 @@ def submit_review():
         filename = f"{username}_{image.filename}"
         filepath = os.path.join('app', 'uploads', filename)
         image.save(filepath)
-        image_path = filepath
+        image_path = filename
 
     review = Review(
         rating=int(rating),
@@ -108,3 +108,13 @@ def get_reviews():
         })
 
     return {"reviews": results}
+
+from flask import send_from_directory
+
+import os
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+
+@main.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)

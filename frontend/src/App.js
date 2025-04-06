@@ -143,8 +143,17 @@ function App() {
                   <p><strong>User:</strong> {r.username}</p>
                   <p><strong>Rating:</strong> {r.rating}/5</p>
                   <p><strong>Comment:</strong> {r.comment}</p>
+
+                  {r.image && (
+                    <img
+                      src={`http://localhost:5000/uploads/${r.image}`}
+                      alt="Review"
+                      style={{ maxWidth: '100%', marginTop: '0.5rem', borderRadius: '8px' }}
+                    />
+                  )}
                 </div>
               ))}
+
             </div>
           )}
 
