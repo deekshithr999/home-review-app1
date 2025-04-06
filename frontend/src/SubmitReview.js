@@ -18,6 +18,11 @@ const SubmitReview = ({ username }) => {
 
 
   const handleSubmit = async (e) => {
+    if (!address.trim() || !comment.trim() || rating === 0) {
+        setMessage("Please fill out all fields and select a rating.");
+        return;
+      }
+      
     e.preventDefault();
     const formData = new FormData();
     formData.append('username', username);

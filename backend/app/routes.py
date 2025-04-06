@@ -50,7 +50,7 @@ def login():
 @main.route('/review', methods=['POST'])
 def submit_review():
     username = request.form.get('username')
-    address = request.form.get('address')
+    address = request.form.get('address').strip().lower()
     rating = request.form.get('rating')
     comment = request.form.get('comment')
     image = request.files.get('image')
@@ -59,7 +59,7 @@ def submit_review():
     if not user:
         return {"error": "User not found"}, 404
 
-    home = Home.query.filter_by(address=address).first()
+    home = Home.query.filter(func.lower(Home.address) == address).first()
     if not home:
         home = Home(address=address)
         db.session.add(home)

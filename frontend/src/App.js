@@ -59,8 +59,17 @@ function App() {
 
           <Route
             path="/submit"
-            element={<SubmitReview username={username} />}
+            element={
+              username ? (
+                <SubmitReview username={username} />
+              ) : (
+                <Typography variant="h6" align="center" sx={{ mt: 4 }}>
+                  Please log in to submit a review.
+                </Typography>
+              )
+            }
           />
+
 
           <Route path="/my-reviews" element={<MyReviews username={username} />} />
 

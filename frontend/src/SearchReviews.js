@@ -66,6 +66,14 @@ const SearchReviews = () => {
             {reviews.length} Review{reviews.length > 1 ? 's' : ''} Found:
           </Typography>
 
+          <Typography variant="body2" gutterBottom>
+            Average Rating: ⭐{" "}
+            {(
+              reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+             ).toFixed(1)} from {reviews.length} review{reviews.length > 1 ? 's' : ''}
+          </Typography>
+
+
           {reviews.map((r, idx) => (
             <Box key={idx} sx={{ mb: 3 }}>
                 <Card
