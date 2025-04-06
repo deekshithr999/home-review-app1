@@ -142,3 +142,27 @@ def get_my_reviews():
             for review in reviews
         ]
     }
+
+@main.route('/delete-review', methods=['POST'])
+def delete_review():
+    data = request.get_json()
+    username = data.get('username')
+    address = data.get('address')
+    comment = data.get('comment')
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return {"error": "User not found"}, 404
+
+    review = Review.query.join(Home).filter(
+        Review.user_id == user.id,
+        Home.address == address,
+        Review.comment == comment
+    ).first()
+
+    if not review:
+        return {"error": "Review not found"}, 404
+
+    db.session.delete(review)
+    db.session.commit()
+    return {"message": "Review deleted"}

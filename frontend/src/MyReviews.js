@@ -5,8 +5,12 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Rating
+  Rating,
+  Button
 } from '@mui/material';
+
+
+  
 
 const MyReviews = ({ username }) => {
   const [reviews, setReviews] = useState([]);
@@ -28,6 +32,31 @@ const MyReviews = ({ username }) => {
       fetchMyReviews();
     }
   }, [username]);
+
+  const handleDelete = async (review) => {
+    const confirmed = window.confirm("Are you sure you want to delete this review?");
+    if (!confirmed) return;
+  
+    try {
+      const res = await fetch('http://localhost:5000/delete-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username,
+          address: review.address,
+          comment: review.comment
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setReviews(reviews.filter((r) => r.comment !== review.comment));
+      } else {
+        alert(data.error || "Failed to delete");
+      }
+    } catch (err) {
+      alert("Error deleting review");
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
@@ -64,6 +93,15 @@ const MyReviews = ({ username }) => {
                 <Typography variant="body2" sx={{ mt: 1 }}>
                   {r.comment}
                 </Typography>
+                <Button
+                    color="error"
+                    variant="outlined"
+                    size="small"
+                    sx={{ mt: 2 }}
+                    onClick={() => handleDelete(r)}
+                >
+                    Delete
+                </Button>
               </CardContent>
             </Card>
           </Box>
