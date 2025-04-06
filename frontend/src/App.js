@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 
 function App() {
-  const [mode, setMode] = useState('login'); // login/register/search
+  const [mode, setMode] = useState('login'); // login, register, search, submit
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [address, setAddress] = useState('');
-  const [message, setMessage] = useState('');
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
   const [reviews, setReviews] = useState([]);
+  const [message, setMessage] = useState('');
 
   const handleAuth = async (endpoint) => {
     const res = await fetch(`http://localhost:5000/${endpoint}`, {
@@ -16,6 +18,9 @@ function App() {
     });
     const data = await res.json();
     setMessage(data.message || data.error || '');
+    if (res.ok) {
+      setMode('search');
+    }
   };
 
   const handleSearch = async (e) => {
@@ -33,6 +38,26 @@ function App() {
     } catch (err) {
       console.error(err);
       setMessage('Could not connect to backend');
+    }
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('http://localhost:5000/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, address, rating, comment }),
+      });
+      const data = await res.json();
+      setMessage(data.message || data.error || '');
+      if (res.ok) {
+        setRating(5);
+        setComment('');
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('Error submitting review');
     }
   };
 
@@ -79,11 +104,8 @@ function App() {
           >
             {mode === 'login' ? 'Need an account? Register' : 'Already have an account? Login'}
           </button>
-          <button onClick={() => setMode('search')} style={{ marginTop: '1rem' }}>
-            🔍 Go to Search Reviews
-          </button>
         </>
-      ) : (
+      ) : mode === 'search' ? (
         <>
           <h2>Search Reviews by Address</h2>
           <form onSubmit={handleSearch}>
@@ -114,11 +136,51 @@ function App() {
             </div>
           )}
 
-          <button onClick={() => setMode('login')} style={{ marginTop: '1rem' }}>
-            🔐 Back to Login/Register
+          <div style={{ marginTop: '1rem' }}>
+            <button onClick={() => setMode('submit')} style={{ marginRight: '0.5rem' }}>
+              ➕ Submit Review
+            </button>
+            <button onClick={() => setMode('login')}>🔐 Logout</button>
+          </div>
+        </>
+      ) : mode === 'submit' ? (
+        <>
+          <h2>Submit a Review</h2>
+          <form onSubmit={handleReviewSubmit}>
+            <input
+              type="text"
+              placeholder="Home address"
+              value={address}
+              required
+              onChange={(e) => setAddress(e.target.value)}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            />
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={rating}
+              required
+              onChange={(e) => setRating(Number(e.target.value))}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            />
+            <textarea
+              placeholder="Leave your comment..."
+              value={comment}
+              required
+              onChange={(e) => setComment(e.target.value)}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            ></textarea>
+            <button type="submit" style={{ width: '100%' }}>
+              Submit Review
+            </button>
+          </form>
+          <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>
+          <button onClick={() => setMode('search')} style={{ marginTop: '1rem' }}>
+            🔍 Back to Search
           </button>
         </>
-      )}
+      ) : null}
     </div>
   );
 }
