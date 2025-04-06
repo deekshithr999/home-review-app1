@@ -118,3 +118,27 @@ UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 @main.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+@main.route('/my-reviews', methods=['GET'])
+def get_my_reviews():
+    username = request.args.get('username')
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return {"error": "User not found"}, 404
+
+    reviews = Review.query.filter_by(user_id=user.id).all()
+
+    return {
+        "reviews": [
+            {
+                "username": user.username,
+                "address": review.home.address,
+                "rating": review.rating,
+                "comment": review.comment,
+                "image": review.image_path
+            }
+            for review in reviews
+        ]
+    }

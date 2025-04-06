@@ -1,215 +1,82 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+
+import LoginForm from './LoginForm';
+import SearchReviews from './SearchReviews';
+import SubmitReview from './SubmitReview';
+import MyReviews from './MyReviews';
+
 
 function App() {
-  const [mode, setMode] = useState('login'); // login, register, search, submit
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-  const [reviews, setReviews] = useState([]);
-  const [message, setMessage] = useState('');
-  const [image, setImage] = useState(null);
 
+  const [username, setUsername] = useState(() => localStorage.getItem('username') || '');
 
-  const handleAuth = async (endpoint) => {
-    const res = await fetch(`http://localhost:5000/${endpoint}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    });
-    const data = await res.json();
-    setMessage(data.message || data.error || '');
-    if (res.ok) {
-      setMode('search');
-    }
-  };
-
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await fetch(`http://localhost:5000/reviews?address=${encodeURIComponent(address)}`);
-      const data = await res.json();
-      if (res.ok) {
-        setReviews(data.reviews || []);
-        setMessage('');
-      } else {
-        setReviews([]);
-        setMessage(data.error || 'Something went wrong');
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage('Could not connect to backend');
-    }
-  };
-
-  const handleReviewSubmit = async (e) => {
-    e.preventDefault();
   
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('address', address);
-    formData.append('rating', rating);
-    formData.append('comment', comment);
-    if (image) formData.append('image', image);
-  
-    try {
-      const res = await fetch('http://localhost:5000/review', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      setMessage(data.message || data.error || '');
-      if (res.ok) {
-        setRating(5);
-        setComment('');
-        setImage(null);
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage('Error submitting review');
-    }
-  };
-
-
-
   return (
-    <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto' }}>
-      <h1>🏡 Review My Home</h1>
+    <Router>
+      <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          🏡 Review My Home
+        </Typography>
 
-      {mode === 'login' || mode === 'register' ? (
-        <>
-          <h2>{mode === 'login' ? 'Login' : 'Register'}</h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAuth(mode);
+        {username && (
+          <Typography
+            sx={{
+              color: 'white',
+              fontWeight: 500,
+              fontSize: '1rem',
+              marginRight: '1rem',
             }}
           >
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              required
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <button type="submit" style={{ width: '100%' }}>
-              {mode === 'login' ? 'Login' : 'Register'}
-            </button>
-          </form>
-          <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>
-          <button
-            onClick={() => {
-              setMessage('');
-              setMode(mode === 'login' ? 'register' : 'login');
-            }}
-            style={{ marginTop: '1rem' }}
-          >
-            {mode === 'login' ? 'Need an account? Register' : 'Already have an account? Login'}
-          </button>
-        </>
-      ) : mode === 'search' ? (
-        <>
-          <h2>Search Reviews by Address</h2>
-          <form onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Enter address"
-              value={address}
-              required
-              onChange={(e) => setAddress(e.target.value)}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <button type="submit" style={{ width: '100%' }}>
-              Search Reviews
-            </button>
-          </form>
-          <p style={{ marginTop: '1rem', color: 'red' }}>{message}</p>
+            Welcome, {username}
+          </Typography>
+        )}
 
-          {reviews.length > 0 && (
-            <div style={{ marginTop: '2rem' }}>
-              <h3>Reviews for: {address}</h3>
-              {reviews.map((r, idx) => (
-                <div key={idx} style={{ borderBottom: '1px solid #ccc', padding: '1rem 0' }}>
-                  <p><strong>User:</strong> {r.username}</p>
-                  <p><strong>Rating:</strong> {r.rating}/5</p>
-                  <p><strong>Comment:</strong> {r.comment}</p>
+        <Button color="inherit" component={Link} to="/">Home</Button>
+        <Button color="inherit" component={Link} to="/submit">Submit Review</Button>
+        <Button color="inherit" component={Link} to="/my-reviews">My Reviews</Button>
+        {username ? (
+          <Button color="inherit" onClick={() => {
+            setUsername('');
+            localStorage.removeItem('username');
+            window.location.href = '/login';
+          }}>
+            Logout
+          </Button>
+        ) : (
+          <Button color="inherit" component={Link} to="/login">Login</Button>
+        )}
+      </Toolbar>
 
-                  {r.image && (
-                    <img
-                      src={`http://localhost:5000/uploads/${r.image}`}
-                      alt="Review"
-                      style={{ maxWidth: '100%', marginTop: '0.5rem', borderRadius: '8px' }}
-                    />
-                  )}
-                </div>
-              ))}
+      </AppBar>
 
-            </div>
-          )}
+      <Container sx={{ marginTop: 4 }}>
+        <Routes>
 
-          <div style={{ marginTop: '1rem' }}>
-            <button onClick={() => setMode('submit')} style={{ marginRight: '0.5rem' }}>
-              ➕ Submit Review
-            </button>
-            <button onClick={() => setMode('login')}>🔐 Logout</button>
-          </div>
-        </>
-      ) : mode === 'submit' ? (
-        <>
-          <h2>Submit a Review</h2>
-          <form onSubmit={handleReviewSubmit} encType="multipart/form-data">
-            <input
-              type="text"
-              placeholder="Home address"
-              value={address}
-              required
-              onChange={(e) => setAddress(e.target.value)}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <input
-              type="number"
-              min="1"
-              max="5"
-              value={rating}
-              required
-              onChange={(e) => setRating(Number(e.target.value))}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <textarea
-              placeholder="Leave your comment..."
-              value={comment}
-              required
-              onChange={(e) => setComment(e.target.value)}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            ></textarea>
-            {/* Image upload field (optional) */}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-              style={{ width: '100%', marginBottom: '1rem' }}
-            />
-            <button type="submit" style={{ width: '100%' }}>
-              Submit Review
-            </button>
-          </form>
-          <p style={{ marginTop: '1rem', color: 'green' }}>{message}</p>
-          <button onClick={() => setMode('search')} style={{ marginTop: '1rem' }}>
-            🔍 Back to Search
-          </button>
-        </>
-      ) : null}
-    </div>
+          <Route path="/" element={<SearchReviews />} />
+
+          <Route
+            path="/submit"
+            element={<SubmitReview username={username} />}
+          />
+
+          <Route path="/my-reviews" element={<MyReviews username={username} />} />
+
+          <Route
+            path="/login"
+            element={
+              <LoginForm
+                setUsername={setUsername}
+                onLogin={() => window.location.href = '/'} // redirect to home
+              />
+            }
+          />
+
+        </Routes>
+      </Container>
+    </Router>
   );
 }
 
