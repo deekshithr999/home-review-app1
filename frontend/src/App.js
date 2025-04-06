@@ -9,6 +9,8 @@ function App() {
   const [comment, setComment] = useState('');
   const [reviews, setReviews] = useState([]);
   const [message, setMessage] = useState('');
+  const [image, setImage] = useState(null);
+
 
   const handleAuth = async (endpoint) => {
     const res = await fetch(`http://localhost:5000/${endpoint}`, {
@@ -43,23 +45,33 @@ function App() {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+  
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('address', address);
+    formData.append('rating', rating);
+    formData.append('comment', comment);
+    if (image) formData.append('image', image);
+  
     try {
       const res = await fetch('http://localhost:5000/review', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, address, rating, comment }),
+        body: formData,
       });
       const data = await res.json();
       setMessage(data.message || data.error || '');
       if (res.ok) {
         setRating(5);
         setComment('');
+        setImage(null);
       }
     } catch (err) {
       console.error(err);
       setMessage('Error submitting review');
     }
   };
+
+
 
   return (
     <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto' }}>
@@ -146,7 +158,7 @@ function App() {
       ) : mode === 'submit' ? (
         <>
           <h2>Submit a Review</h2>
-          <form onSubmit={handleReviewSubmit}>
+          <form onSubmit={handleReviewSubmit} encType="multipart/form-data">
             <input
               type="text"
               placeholder="Home address"
@@ -171,6 +183,13 @@ function App() {
               onChange={(e) => setComment(e.target.value)}
               style={{ width: '100%', marginBottom: '1rem' }}
             ></textarea>
+            {/* Image upload field (optional) */}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
+              style={{ width: '100%', marginBottom: '1rem' }}
+            />
             <button type="submit" style={{ width: '100%' }}>
               Submit Review
             </button>

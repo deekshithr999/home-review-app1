@@ -3,6 +3,7 @@ from .models import User, Home, Review
 from . import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import os
 
 
 main = Blueprint('main', __name__)
@@ -48,11 +49,11 @@ def login():
 
 @main.route('/review', methods=['POST'])
 def submit_review():
-    data = request.get_json()
-    username = data.get('username')  # For now we'll use this instead of auth
-    address = data.get('address')
-    rating = data.get('rating')
-    comment = data.get('comment')
+    username = request.form.get('username')
+    address = request.form.get('address')
+    rating = request.form.get('rating')
+    comment = request.form.get('comment')
+    image = request.files.get('image')
 
     user = User.query.filter_by(username=username).first()
     if not user:
@@ -64,16 +65,24 @@ def submit_review():
         db.session.add(home)
         db.session.commit()
 
+    image_path = None
+    if image:
+        filename = f"{username}_{image.filename}"
+        filepath = os.path.join('app', 'uploads', filename)
+        image.save(filepath)
+        image_path = filepath
+
     review = Review(
-        rating=rating,
+        rating=int(rating),
         comment=comment,
         user_id=user.id,
-        home_id=home.id
+        home_id=home.id,
+        image_path=image_path
     )
     db.session.add(review)
     db.session.commit()
 
-    return {"message": "Review submitted!"}
+    return {"message": "Review submitted with image" if image else "Review submitted"}
 
 
 @main.route('/reviews', methods=['GET'])
