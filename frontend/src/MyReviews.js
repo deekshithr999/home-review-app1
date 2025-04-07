@@ -18,7 +18,7 @@ const MyReviews = ({ username }) => {
   useEffect(() => {
     const fetchMyReviews = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/my-reviews?username=${username}`);
+        const res = await fetch(`http://localhost:8080/api/my-reviews?username=${username}`);
         const data = await res.json();
         if (res.ok) {
           setReviews(data.reviews || []);
@@ -38,7 +38,7 @@ const MyReviews = ({ username }) => {
     if (!confirmed) return;
   
     try {
-      const res = await fetch('http://localhost:5000/delete-review', {
+      const res = await fetch('http://localhost:8080/api/delete-review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

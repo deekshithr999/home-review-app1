@@ -8,12 +8,12 @@ import os
 
 main = Blueprint('main', __name__)
 
-@main.route('/')
+@main.route('/api/')
 def index():
     return {"message": "Hello from Flask backend!"}
 
 
-@main.route('/register', methods=['POST'])
+@main.route('/api/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -34,7 +34,7 @@ def register():
     return jsonify({"message": "User registered successfully"}), 201
 
 
-@main.route('/login', methods=['POST'])
+@main.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
@@ -47,7 +47,7 @@ def login():
     return jsonify({"message": "Login successful"}), 200
 
 
-@main.route('/review', methods=['POST'])
+@main.route('/api/review', methods=['POST'])
 def submit_review():
     username = request.form.get('username')
     address = request.form.get('address').strip().lower()
@@ -85,7 +85,7 @@ def submit_review():
     return {"message": "Review submitted with image" if image else "Review submitted"}
 
 
-@main.route('/reviews', methods=['GET'])
+@main.route('/api/reviews', methods=['GET'])
 def get_reviews():
     address = request.args.get('address')
 
@@ -117,12 +117,12 @@ import os
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 
-@main.route('/uploads/<filename>')
+@main.route('/api/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
 
-@main.route('/my-reviews', methods=['GET'])
+@main.route('/api/my-reviews', methods=['GET'])
 def get_my_reviews():
     username = request.args.get('username')
     user = User.query.filter_by(username=username).first()
@@ -146,7 +146,7 @@ def get_my_reviews():
         ]
     }
 
-@main.route('/delete-review', methods=['POST'])
+@main.route('/api/delete-review', methods=['POST'])
 def delete_review():
     data = request.get_json()
     username = data.get('username')

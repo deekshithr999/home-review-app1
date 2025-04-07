@@ -20,7 +20,7 @@ const SearchReviews = () => {
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:5000/reviews?address=${encodeURIComponent(address)}`);
+      const res = await fetch(`http://localhost:8080/api/reviews?address=${encodeURIComponent(address)}`);
       const data = await res.json();
       if (res.ok) {
         setReviews(data.reviews || []);
@@ -92,7 +92,7 @@ const SearchReviews = () => {
                 {r.image && (
                     <CardMedia
                     component="img"
-                    image={`http://localhost:5000/uploads/${r.image}`}
+                    image={`http://localhost:8080/api/uploads/${r.image}`}
                     alt="Review"
                     sx={{
                         width: 140,

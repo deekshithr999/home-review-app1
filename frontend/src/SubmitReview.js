@@ -32,7 +32,7 @@ const SubmitReview = ({ username }) => {
     if (image) formData.append('image', image);
 
     try {
-      const res = await fetch('http://localhost:5000/review', {
+      const res = await fetch('http://localhost:8080/api/review', {
         method: 'POST',
         body: formData,
       });
