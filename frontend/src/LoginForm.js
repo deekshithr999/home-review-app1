@@ -24,10 +24,10 @@ const LoginForm = ({ setUsername, onLogin }) => {
       return;
     }
 
-    const endpoint = mode === 'login' ? 'login' : '/register';
+    const endpoint = `/api/${mode === 'login' ? 'login' : 'register'}`;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/${endpoint}`, {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: usernameInput, password }),

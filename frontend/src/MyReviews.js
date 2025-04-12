@@ -18,7 +18,7 @@ const MyReviews = ({ username }) => {
   useEffect(() => {
     const fetchMyReviews = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/my-reviews?username=${username}`);
+        const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/my-reviews?username=${username}`);
         const data = await res.json();
         if (res.ok) {
           setReviews(data.reviews || []);
@@ -38,7 +38,7 @@ const MyReviews = ({ username }) => {
     if (!confirmed) return;
   
     try {
-      const res = await fetch('http://localhost:8080/api/delete-review', {
+      const res = await fetch(`/${process.env.REACT_APP_API_BASE_URL}api/delete-review`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -73,7 +73,7 @@ const MyReviews = ({ username }) => {
               {r.image && (
                 <CardMedia
                   component="img"
-                  image={`http://localhost:5000/uploads/${r.image}`}
+                  image={`${process.env.REACT_APP_API_BASE_URL}/api/uploads/${r.image}`}
                   alt="Review"
                   sx={{
                     width: 140,
