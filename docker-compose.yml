@@ -118,6 +118,7 @@ services:
     build: ./backend
     volumes:
       - ./backend/app/uploads:/app/app/uploads
+      - ./backend/data/:/app/data  # New volume for DB persistence
     environment:
       - FLASK_ENV=production
     networks:
@@ -128,7 +129,7 @@ services:
       context: .
       dockerfile: nginx/Dockerfile
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./backend/app/uploads:/app/uploads
     depends_on:

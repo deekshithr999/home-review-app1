@@ -10,6 +10,8 @@ import {
   Paper
 } from '@mui/material';
 
+
+
 const LoginForm = ({ setUsername, onLogin }) => {
   const [mode, setMode] = useState('login'); // login or register
   const [usernameInput, setUsernameInput] = useState('');
@@ -48,7 +50,43 @@ const LoginForm = ({ setUsername, onLogin }) => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: 'auto', mt: 8 }}>
+    // <Box sx={{ 
+    //   //maxWidth: 400, mx: 'auto', mt: 8
+    //   backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(/backgrounds/login_img_bg.png)',
+    //   backgroundSize: 'cover',
+    //   minHeight: '100vh',
+    //   display: 'flex',
+    //   justifyContent: 'center',
+    //   alignItems: 'center'
+    //  }}>
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+    {/* Full-screen background */}
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(/backgrounds/login_img_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        zIndex: -1
+      }}
+    />
+
+    {/* Form container */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        p: 2,
+        position: 'relative',
+        zIndex: 1
+      }}
+    >
       <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
         <Typography variant="h5" gutterBottom align="center">
           {mode === 'login' ? 'Login to Your Account' : 'Create a New Account'}
@@ -98,6 +136,7 @@ const LoginForm = ({ setUsername, onLogin }) => {
           </Button>
         </form>
       </Paper>
+    </Box>
     </Box>
   );
 };

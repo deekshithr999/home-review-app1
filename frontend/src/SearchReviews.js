@@ -35,7 +35,33 @@ const SearchReviews = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+    // <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+    {/* Full-screen background */}
+    <Box
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundImage: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(/backgrounds/home_img_bg.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        zIndex: -1
+      }}
+    />
+
+    {/* Content container */}
+    <Box
+      sx={{
+        position: 'relative',
+        zIndex: 1,
+        p: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.85)',
+        minHeight: '100vh'
+      }}
+    >
       <Typography variant="h5" gutterBottom align="center">
         Search Reviews by Address
       </Typography>
@@ -123,11 +149,13 @@ const SearchReviews = () => {
                     </Typography>
                 </CardContent>
                 </Card>
+                
             </Box>
             ))}
 
         </>
       )}
+      </Box>
     </Box>
   );
 };
